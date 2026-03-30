@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface2: #fbfbfd;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #aeaeb2;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --green: #34c759;
+    --red: #ff3b30;
+    --border: rgba(0,0,0,0.08);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.13);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: rgba(245,245,247,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 32px;
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--accent); }
+  .progress-pill {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+    border-radius: 100px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* ── NAV PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── CATEGORY TABS ── */
+  .tabs-wrapper {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .tab {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .tab:hover { background: #ececec; color: var(--text-primary); }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── TOP NAV ── */
+  .top-nav {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-btn {
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all 0.18s ease;
+  }
+  .nav-btn:hover { background: rgba(0,0,0,0.06); color: var(--text-primary); }
+  .nav-btn.active { background: var(--text-primary); color: #fff; }
+
+  /* ── QUIZ ── */
+  .quiz-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .quiz-hero {
+    text-align: center;
+    padding: 48px 24px 40px;
+  }
+  .quiz-hero h2 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    margin-bottom: 10px;
+  }
+  .quiz-hero p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+  }
+  .quiz-start-btn {
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    padding: 14px 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(0,113,227,0.3);
+  }
+  .quiz-start-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,113,227,0.4); }
+
+  /* quiz in progress */
+  .quiz-active { display: none; }
+  .quiz-active.show { display: block; }
+  .quiz-hero-wrap { }
+  .quiz-hero-wrap.hide { display: none; }
+
+  .quiz-progress-bar-wrap {
+    background: var(--border);
+    border-radius: 100px;
+    height: 5px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .quiz-progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .quiz-qnum {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .quiz-score-live {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .quiz-question-card {
+    background: var(--surface);
+    border-radius: 24px;
+    padding: 36px 32px 28px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .quiz-direction {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+  }
+  .quiz-question-text {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .quiz-option {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: all 0.18s ease;
+    line-height: 1.3;
+  }
+  .quiz-option:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(0,113,227,0.04);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+  .quiz-option.correct {
+    border-color: var(--green);
+    background: rgba(52,199,89,0.08);
+    color: #1a7a33;
+  }
+  .quiz-option.wrong {
+    border-color: var(--red);
+    background: rgba(255,59,48,0.07);
+    color: #c0392b;
+  }
+  .quiz-option:disabled { cursor: default; }
+
+  .quiz-feedback {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 0 4px;
+    margin-bottom: 16px;
+  }
+  .feedback-icon { font-size: 22px; }
+
+  .quiz-next-btn {
+    width: 100%;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: none;
+  }
+  .quiz-next-btn.show { display: block; }
+  .quiz-next-btn:hover { background: var(--accent-hover); }
+
+  /* Results */
+  .quiz-results {
+    display: none;
+    text-align: center;
+    padding: 40px 24px;
+  }
+  .quiz-results.show { display: block; }
+  .result-emoji { font-size: 64px; margin-bottom: 16px; }
+  .result-score {
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .result-label {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+  }
+  .result-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .result-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 28px;
+    min-width: 100px;
+  }
+  .result-stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .result-stat-num.green { color: var(--green); }
+  .result-stat-num.red { color: var(--red); }
+  .result-stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+  .result-wrong-list {
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .result-wrong-header {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-wrong-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    gap: 16px;
+  }
+  .result-wrong-item:last-child { border-bottom: none; }
+  .result-wrong-en { font-weight: 600; color: var(--text-primary); }
+  .result-wrong-fr { color: var(--accent); font-weight: 500; }
+  .result-wrong-yours { color: var(--red); font-size: 13px; }
+
+  @media (max-width: 600px) {
+    .quiz-options { grid-template-columns: 1fr; }
+    .quiz-question-text { font-size: 20px; }
+    .quiz-question-card { padding: 24px 20px 20px; }
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+  }
+  .section-count {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text-tertiary);
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── FLASHCARD ── */
+  .flashcard {
+    perspective: 1000px;
+    height: 120px;
+    cursor: pointer;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(0.4, 0.2, 0.2, 1);
+  }
+  .flashcard.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .card-front {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .flashcard:hover .card-front {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px) rotateY(0deg);
+  }
+  .flashcard.flipped:hover .card-front { transform: translateY(0); }
+
+  .card-back {
+    background: linear-gradient(135deg, #0071e3 0%, #42a1ec 100%);
+    transform: rotateY(180deg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-front .word {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+  }
+  .card-back .word {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+  }
+
+  .card-front::after {
+    content: "↗";
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .flashcard:hover .card-front::after { opacity: 1; }
+
+  /* ── SEARCH BAR ── */
+  .search-wrapper {
+    margin-bottom: 28px;
+  }
+  .search-input {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 20px 10px 42px;
+    font-size: 15px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23aeaeb2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 16px center;
+    font-family: inherit;
+  }
+  .search-input::placeholder { color: var(--text-tertiary); }
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
+  }
+
+  /* ── STUDY MODE ── */
+  .study-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 9px 20px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,113,227,0.35); }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: #ececec; }
+
+  /* ── STUDY MODE OVERLAY ── */
+  .study-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+  }
+  .study-overlay.active { display: flex; }
+
+  .study-card-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 500px;
+  }
+  .study-card {
+    background: var(--surface);
+    border-radius: 28px;
+    padding: 60px 48px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    transition: transform 0.45s cubic-bezier(0.4,0.2,0.2,1);
+    transform-style: preserve-3d;
+    position: relative;
+  }
+  .study-card.flipped { transform: rotateY(180deg); }
+
+  .study-front, .study-back {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    padding: 40px;
+  }
+  .study-back { transform: rotateY(180deg); }
+
+  .study-lang {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .study-word {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+  .study-back .study-word { color: var(--accent); }
+  .study-hint {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-top: 8px;
+  }
+
+  .study-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .study-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .study-counter {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+  }
+  .btn-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .btn-icon:hover { background: rgba(255,255,255,0.25); }
+  .btn-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-close:hover { background: rgba(255,255,255,0.3); }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .stat-chip .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .dot-blue { background: var(--accent); }
+  .dot-green { background: var(--green); }
+
+  /* Empty state */
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-tertiary);
+    font-size: 15px;
+  }
+
+  @media (max-width: 600px) {
+    main { padding: 24px 16px 60px; }
+    header { padding: 0 16px; }
+    .section-title { font-size: 22px; }
+    .cards-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .flashcard { height: 100px; }
+    .card-front .word, .card-back .word { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Flash<span>Cards</span> · Finance</div>
+    <div class="top-nav">
+      <button class="nav-btn active" onclick="switchPage('flashcards')">Cartes</button>
+      <button class="nav-btn" onclick="switchPage('quiz')">✦ Test</button>
+    </div>
+    <div class="progress-pill" id="total-count">0 termes</div>
+  </div>
+</header>
+
+<main>
+<!-- ══ PAGE: FLASHCARDS ══ -->
+<div class="page active" id="page-flashcards">
+  <div class="tabs-wrapper" id="tabs"></div>
+
+  <div class="search-wrapper">
+    <input type="text" class="search-input" id="search" placeholder="Rechercher un terme…">
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-chip"><span class="dot dot-blue"></span><span id="visible-count">0 termes visibles</span></div>
+    <div class="stat-chip"><span class="dot dot-green"></span><span id="flipped-count">0 retournées</span></div>
+  </div>
+
+  <div class="study-bar">
+    <button class="btn btn-primary" onclick="openStudy()">✦ Mode étude</button>
+    <button class="btn btn-secondary" onclick="shuffleCards()">⇌ Mélanger</button>
+    <button class="btn btn-secondary" onclick="resetAll()">↺ Réinitialiser</button>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title" id="section-title">Tous les termes</div>
+    <div class="section-count" id="section-count"></div>
+  </div>
+
+  <div class="cards-grid" id="cards-grid"></div>
+</div><!-- end page-flashcards -->
+
+<!-- ══ PAGE: QUIZ ══ -->
+<div class="page" id="page-quiz">
+  <div class="quiz-wrap">
+
+    <!-- Start screen -->
+    <div id="quiz-hero-wrap" class="quiz-hero">
+      <h2>Mode Test 🎯</h2>
+      <p>30 mots aléatoires piochés dans toutes les catégories.<br>Trouve la bonne traduction parmi 4 choix.</p>
+      <button class="quiz-start-btn" onclick="startQuiz()">Commencer le test</button>
+    </div>
+
+    <!-- Quiz in progress -->
+    <div class="quiz-active" id="quiz-active">
+      <div class="quiz-meta">
+        <div class="quiz-qnum" id="quiz-qnum">Question 1 / 30</div>
+        <div class="quiz-score-live" id="quiz-score-live">✓ 0 &nbsp; ✗ 0</div>
+      </div>
+      <div class="quiz-progress-bar-wrap">
+        <div class="quiz-progress-bar" id="quiz-progress-bar" style="width:0%"></div>
+      </div>
+      <div class="quiz-question-card">
+        <div class="quiz-direction" id="quiz-direction">EN → FR</div>
+        <div class="quiz-question-text" id="quiz-question-text">—</div>
+      </div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="quiz-next-btn" id="quiz-next-btn" onclick="quizNext()">Suivant →</button>
+    </div>
+
+    <!-- Results -->
+    <div class="quiz-results" id="quiz-results">
+      <div class="result-emoji" id="result-emoji">🎉</div>
+      <div class="result-score" id="result-score">0/30</div>
+      <div class="result-label" id="result-label">Résultat</div>
+      <div class="result-breakdown">
+        <div class="result-stat">
+          <div class="result-stat-num green" id="res-correct">0</div>
+          <div class="result-stat-label">Corrects</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-num red" id="res-wrong">0</div>
+          <div class="result-stat-label">Erreurs</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-num" id="res-pct" style="color:var(--accent)">0%</div>
+          <div class="result-stat-label">Score</div>
+        </div>
+      </div>
+      <div id="result-wrong-section"></div>
+      <button class="quiz-start-btn" onclick="startQuiz()">Recommencer</button>
+    </div>
+
+  </div>
+</div><!-- end page-quiz -->
+
+</main>
+
+<!-- Study mode overlay -->
+<div class="study-overlay" id="study-overlay">
+  <div class="btn-close" onclick="closeStudy()">✕</div>
+  <div class="study-nav">
+    <div class="btn-icon" onclick="studyPrev()">‹</div>
+    <div class="study-counter" id="study-counter">1 / 1</div>
+    <div class="btn-icon" onclick="studyNext()">›</div>
+  </div>
+  <div class="study-card-container">
+    <div class="study-card" id="study-card" onclick="flipStudyCard()">
+      <div class="study-front">
+        <div class="study-lang">English</div>
+        <div class="study-word" id="study-en">—</div>
+        <div class="study-hint">Cliquez pour voir la traduction</div>
+      </div>
+      <div class="study-back">
+        <div class="study-lang">Français</div>
+        <div class="study-word" id="study-fr">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="study-controls">
+    <button class="btn btn-secondary" onclick="studyPrev()">← Précédent</button>
+    <button class="btn btn-primary" onclick="studyNext()">Suivant →</button>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  "ETF & Investing": [
+    ["exchange-traded fund (ETF)", "fonds négocié en bourse (ETF / FNB)"],
+    ["investment fund", "fonds d'investissement"],
+    ["Stock", "action"],
+    ["Bond", "obligation"],
+    ["security", "titre financier"],
+    ["basket of investments", "panier d'investissements"],
+    ["diversification", "diversification"],
+    ["risk management", "gestion du risque"],
+    ["Asset", "actif"],
+    ["underlying assets", "actifs sous-jacents"],
+    ["stock exchange", "bourse"],
+    ["market price", "prix du marché"],
+    ["Share", "part / action"],
+    ["liquidity", "liquidité"],
+    ["return", "rendement"],
+    ["profit", "bénéfice"],
+    ["Loss", "perte"],
+    ["dividend", "dividende"],
+    ["dividend yield", "rendement du dividende"],
+    ["capital gains", "plus-values"],
+    ["market index", "indice boursier"],
+    ["sector", "secteur"],
+    ["net asset value (NAV)", "valeur liquidative (VL)"],
+    ["expense ratio", "ratio de frais / frais de gestion"],
+    ["management costs", "frais de gestion"],
+    ["standardized performance", "performance normalisée"],
+    ["Tracking (an index)", "suivre / répliquer un indice"],
+  ],
+  "Commodities": [
+    ["commodity", "matière première"],
+    ["commodity market", "marché des matières premières"],
+    ["futures market", "marché à terme"],
+    ["futures contract", "contrat à terme"],
+    ["delivery", "livraison"],
+    ["price risk", "risque de prix"],
+    ["hedge (risk)", "couvrir un risque"],
+    ["hedging", "couverture du risque"],
+    ["speculator", "spéculateur"],
+    ["institutional investor", "investisseur institutionnel"],
+    ["metals", "métaux"],
+    ["precious metals", "métaux précieux"],
+    ["non-precious metals", "métaux non précieux"],
+    ["gold", "or"],
+    ["silver", "argent"],
+    ["copper", "cuivre"],
+    ["aluminium", "aluminium"],
+    ["steel", "acier"],
+    ["agricultural produce", "produits agricoles"],
+    ["soft commodities", "matières premières agricoles"],
+    ["coffee", "café"],
+    ["cocoa", "cacao"],
+    ["wheat", "blé"],
+    ["corn", "maïs"],
+    ["crop production", "production agricole"],
+    ["rainfall", "précipitations"],
+  ],
+  "ETF vs Commodities": [
+    ["portfolio", "portefeuille"],
+    ["asset allocation", "allocation d'actifs"],
+    ["volatility", "volatilité"],
+    ["diversification benefit", "avantage de diversification"],
+    ["inflation hedge", "protection contre l'inflation"],
+    ["price fluctuation", "fluctuation des prix"],
+    ["exposure", "exposition"],
+    ["long-term investment", "investissement à long terme"],
+    ["drought", "sécheresse"],
+    ["energy resources", "ressources énergétiques"],
+    ["crude oil", "pétrole brut"],
+    ["natural gas", "gaz naturel"],
+    ["coal", "charbon"],
+    ["supply", "offre"],
+    ["demand", "demande"],
+    ["government policies", "politiques gouvernementales"],
+    ["technological advancements", "avancées technologiques"],
+    ["production cost", "coût de production"],
+    ["cash flow", "flux de trésorerie"],
+    ["contract", "contrat"],
+  ],
+  "Graphs & Charts": [
+    ["line graph", "graphique linéaire"],
+    ["bar chart", "diagramme en barres"],
+    ["pie chart", "diagramme circulaire"],
+    ["trend line", "ligne de tendance"],
+    ["axis", "axe"],
+    ["vertical axis", "axe vertical"],
+    ["horizontal axis", "axe horizontal"],
+    ["data point", "point de données"],
+    ["scale", "échelle"],
+    ["increase", "augmentation"],
+    ["decrease", "diminution"],
+    ["rise", "hausse"],
+    ["fall", "baisse"],
+    ["drop", "chute"],
+    ["growth", "croissance"],
+    ["decline", "déclin"],
+    ["fluctuation", "fluctuation"],
+    ["stability", "stabilité"],
+    ["peak", "pic / sommet"],
+    ["lowest point", "point le plus bas"],
+    ["rise sharply", "augmenter fortement"],
+    ["rise gradually", "augmenter progressivement"],
+    ["level off", "se stabiliser"],
+    ["remain steady", "rester stable"],
+    ["fluctuate", "fluctuer"],
+    ["plummet", "chuter brutalement"],
+    ["soar", "s'envoler"],
+    ["higher than", "plus élevé que"],
+    ["lower than", "plus bas que"],
+    ["similar to", "similaire à"],
+    ["compared to", "comparé à"],
+    ["whereas", "tandis que"],
+    ["in contrast", "en revanche"],
+  ],
+  "SRI": [
+    ["Accountability", "Responsabilité / redevabilité"],
+    ["Board of directors", "Conseil d'administration"],
+    ["Carbon emissions", "Émissions de carbone"],
+    ["Climate change", "Changement climatique"],
+    ["Community development", "Développement communautaire"],
+    ["Community investing", "Investissement communautaire"],
+    ["Compliance", "Conformité"],
+    ["Corporate governance", "Gouvernance d'entreprise"],
+    ["Due diligence", "Diligence raisonnable / audit préalable"],
+    ["Economic inclusion", "Inclusion économique"],
+    ["ESG (Environmental, Social, Governance)", "ESG (Environnemental, Social, Gouvernance)"],
+    ["Ethical investing", "Investissement éthique"],
+    ["Executive compensation", "Rémunération des dirigeants"],
+    ["Fair trade", "Commerce équitable"],
+    ["Fossil fuels", "Combustibles fossiles"],
+    ["Human rights", "Droits de l'homme"],
+    ["Impact investing", "Investissement à impact"],
+    ["Labor rights", "Droits des travailleurs"],
+    ["Long-term return", "Rendement à long terme"],
+    ["Microfinance", "Microfinance"],
+    ["Microloan", "Microcrédit"],
+    ["Negative screening", "Filtrage négatif"],
+    ["Non-financial criteria", "Critères extra-financiers"],
+    ["Pollution", "Pollution"],
+    ["Portfolio alignment", "Alignement du portefeuille"],
+    ["Renewable energy", "Énergie renouvelable"],
+    ["Reputational risk", "Risque de réputation"],
+    ["Responsible investment", "Investissement responsable"],
+    ["Shareholder rights", "Droits des actionnaires"],
+    ["Socially Responsible Investment (SRI)", "Investissement Socialement Responsable (ISR)"],
+    ["Sustainability", "Durabilité"],
+    ["Sustainable development", "Développement durable"],
+    ["Transparency", "Transparence"],
+    ["Working conditions", "Conditions de travail"],
+  ],
+  "Mutual Funds": [
+    ["mutual fund", "fonds commun de placement (FCP)"],
+    ["investment vehicle", "véhicule d'investissement"],
+    ["pool of funds", "mise en commun de capitaux / pool de fonds"],
+    ["fund manager", "gestionnaire de fonds"],
+    ["assets under management (AUM)", "actifs sous gestion"],
+    ["equities", "actions"],
+    ["bonds", "obligations"],
+    ["money market instruments", "instruments du marché monétaire"],
+    ["diversified portfolio", "portefeuille diversifié"],
+    ["net asset value (NAV)", "valeur liquidative"],
+    ["NAV per share (NAVPS)", "valeur liquidative par part"],
+    ["risk tolerance", "tolérance au risque"],
+    ["time horizon", "horizon de placement"],
+    ["sales fee", "frais de vente"],
+    ["front-end load", "frais d'entrée"],
+    ["back-end load", "frais de sortie"],
+    ["no-load fund", "fonds sans commission"],
+    ["management expense ratio (MER)", "ratio des frais de gestion"],
+    ["capital appreciation fund", "fonds de croissance"],
+    ["income fund", "fonds de rendement"],
+    ["balanced fund", "fonds équilibré"],
+    ["equity fund", "fonds actions"],
+    ["bond fund", "fonds obligataire"],
+    ["money market fund", "fonds monétaire"],
+    ["inflows", "flux entrants"],
+    ["outflows", "flux sortants"],
+    ["small-cap funds", "fonds de petites capitalisations"],
+    ["mid-cap funds", "fonds de capitalisations moyennes"],
+  ],
+  "Financial Crisis": [
+    ["Financial crisis", "Crise financière"],
+    ["Economic downturn", "Ralentissement économique"],
+    ["Recession", "Récession"],
+    ["Depression", "Dépression"],
+    ["Market crash", "Krach boursier"],
+    ["Panic", "Panique"],
+    ["Bank run", "Ruée bancaire"],
+    ["Credit crunch", "Crise / resserrement du crédit"],
+    ["Insolvency", "Insolvabilité"],
+    ["Leverage", "Effet de levier"],
+    ["Bailout", "Plan de sauvetage"],
+    ["Mortgage", "Prêt hypothécaire"],
+    ["Subprime loan", "Prêt subprime / à risque"],
+    ["Housing bubble", "Bulle immobilière"],
+    ["Foreclosure", "Saisie immobilière"],
+    ["Default", "Défaut de paiement"],
+    ["Mortgage-backed security (MBS)", "Titre adossé à des créances hypothécaires"],
+    ["Derivative", "Produit dérivé"],
+    ["Securitization", "Titrisation"],
+    ["Toxic assets", "Actifs toxiques"],
+    ["Contagion", "Contagion financière"],
+    ["Safe-haven asset", "Valeur refuge"],
+    ["Central bank", "Banque centrale"],
+    ["Regulation", "Réglementation"],
+    ["Stress test", "Test de résistance"],
+    ["Capital requirements", "Exigences de fonds propres"],
+    ["Unemployment", "Chômage"],
+    ["Public debt", "Dette publique"],
+    ["Austerity", "Austérité"],
+    ["Recovery", "Reprise économique"],
+    ["Systemic risk", "Risque systémique"],
+    ["Interest rate", "Taux d'intérêt"],
+    ["Quantitative easing", "Assouplissement quantitatif"],
+    ["Inflation", "Inflation"],
+    ["Deflation", "Déflation"],
+    ["Stimulus package", "Plan de relance"],
+    ["Write-down", "Dépréciation d'actifs"],
+    ["Credit default swap (CDS)", "Swap de défaut de crédit"],
+    ["Yield", "Rendement"],
+    ["Speculation", "Spéculation"],
+    ["Market sentiment", "Sentiment de marché"],
+  ],
+};
+
+// ── STATE ──
+let activeCategory = "All";
+let searchQuery = "";
+let flippedSet = new Set();
+let currentCards = [];
+let studyIndex = 0;
+let studyFlipped = false;
+let studyCards = [];
+
+// ── BUILD TABS ──
+function buildTabs() {
+  const container = document.getElementById("tabs");
+  const categories = ["All", ...Object.keys(DATA)];
+  container.innerHTML = "";
+  categories.forEach(cat => {
+    const tab = document.createElement("div");
+    tab.className = "tab" + (cat === activeCategory ? " active" : "");
+    tab.textContent = cat === "All" ? "Tous" : cat;
+    tab.onclick = () => { activeCategory = cat; buildTabs(); renderCards(); };
+    container.appendChild(tab);
+  });
+}
+
+// ── GET FILTERED CARDS ──
+function getCards() {
+  let all = [];
+  if (activeCategory === "All") {
+    Object.entries(DATA).forEach(([cat, words]) => {
+      words.forEach(([en, fr]) => all.push({ en, fr, cat }));
+    });
+  } else {
+    (DATA[activeCategory] || []).forEach(([en, fr]) => all.push({ en, fr, cat: activeCategory }));
+  }
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    all = all.filter(c => c.en.toLowerCase().includes(q) || c.fr.toLowerCase().includes(q));
+  }
+  return all;
+}
+
+// ── RENDER ──
+function renderCards() {
+  currentCards = getCards();
+  const grid = document.getElementById("cards-grid");
+  const title = document.getElementById("section-title");
+  const count = document.getElementById("section-count");
+  const totalEl = document.getElementById("total-count");
+  const visibleEl = document.getElementById("visible-count");
+  const flippedEl = document.getElementById("flipped-count");
+
+  // Counts
+  let total = 0;
+  Object.values(DATA).forEach(arr => total += arr.length);
+  totalEl.textContent = total + " termes";
+  visibleEl.textContent = currentCards.length + " termes visibles";
+  flippedEl.textContent = flippedSet.size + " retournées";
+
+  // Title
+  title.textContent = activeCategory === "All" ? "Tous les termes" : activeCategory;
+  count.textContent = currentCards.length + " cartes";
+
+  grid.innerHTML = "";
+  if (currentCards.length === 0) {
+    grid.innerHTML = '<div class="empty">Aucun terme trouvé.</div>';
+    return;
+  }
+  currentCards.forEach((card, i) => {
+    const id = card.en + "_" + card.cat;
+    const isFlipped = flippedSet.has(id);
+    const el = document.createElement("div");
+    el.className = "flashcard" + (isFlipped ? " flipped" : "");
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-front"><div class="word">${card.en}</div></div>
+        <div class="card-face card-back"><div class="word">${card.fr}</div></div>
+      </div>`;
+    el.onclick = () => {
+      if (flippedSet.has(id)) flippedSet.delete(id);
+      else flippedSet.add(id);
+      el.classList.toggle("flipped");
+      document.getElementById("flipped-count").textContent = flippedSet.size + " retournées";
+    };
+    // stagger
+    el.style.animationDelay = (i * 0.025) + "s";
+    el.style.opacity = "0";
+    el.style.animation = `fadeUp 0.3s ease ${i * 0.02}s forwards`;
+    grid.appendChild(el);
+  });
+}
+
+// ── STUDY MODE ──
+function openStudy() {
+  studyCards = [...getCards()];
+  if (!studyCards.length) return;
+  studyIndex = 0;
+  studyFlipped = false;
+  updateStudyCard();
+  document.getElementById("study-overlay").classList.add("active");
+}
+function closeStudy() {
+  document.getElementById("study-overlay").classList.remove("active");
+}
+function updateStudyCard() {
+  const card = studyCards[studyIndex];
+  document.getElementById("study-en").textContent = card.en;
+  document.getElementById("study-fr").textContent = card.fr;
+  document.getElementById("study-counter").textContent = (studyIndex + 1) + " / " + studyCards.length;
+  const sc = document.getElementById("study-card");
+  sc.classList.remove("flipped");
+  studyFlipped = false;
+}
+function flipStudyCard() {
+  const sc = document.getElementById("study-card");
+  studyFlipped = !studyFlipped;
+  sc.classList.toggle("flipped", studyFlipped);
+}
+function studyNext() {
+  studyIndex = (studyIndex + 1) % studyCards.length;
+  updateStudyCard();
+}
+function studyPrev() {
+  studyIndex = (studyIndex - 1 + studyCards.length) % studyCards.length;
+  updateStudyCard();
+}
+
+// ── SHUFFLE ──
+function shuffleCards() {
+  // Shuffle DATA keys
+  Object.keys(DATA).forEach(k => {
+    for (let i = DATA[k].length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [DATA[k][i], DATA[k][j]] = [DATA[k][j], DATA[k][i]];
+    }
+  });
+  renderCards();
+}
+
+// ── RESET ──
+function resetAll() {
+  flippedSet.clear();
+  renderCards();
+}
+
+// ── SEARCH ──
+document.getElementById("search").addEventListener("input", e => {
+  searchQuery = e.target.value.trim();
+  renderCards();
+});
+
+// ── KEYBOARD ──
+document.addEventListener("keydown", e => {
+  const overlay = document.getElementById("study-overlay");
+  if (!overlay.classList.contains("active")) return;
+  if (e.key === "ArrowRight") studyNext();
+  if (e.key === "ArrowLeft") studyPrev();
+  if (e.key === " ") { e.preventDefault(); flipStudyCard(); }
+  if (e.key === "Escape") closeStudy();
+});
+
+// ── FADE-UP ANIMATION ──
+const style = document.createElement("style");
+style.textContent = `
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}`;
+document.head.appendChild(style);
+
+// ── INIT ──
+buildTabs();
+renderCards();
+
+// ── PAGE SWITCHING ──
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ── QUIZ LOGIC ──
+let quizQuestions = [];
+let quizCurrent = 0;
+let quizCorrect = 0;
+let quizWrong = 0;
+let quizMistakes = []; // {en, fr, yourAnswer}
+let quizAnswered = false;
+
+function getAllWords() {
+  let all = [];
+  Object.entries(DATA).forEach(([cat, words]) => {
+    words.forEach(([en, fr]) => all.push({ en, fr }));
+  });
+  return all;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildQuizQuestions() {
+  const all = getAllWords();
+  const selected = shuffle(all).slice(0, 30);
+  return selected.map(card => {
+    // direction: 50% EN→FR, 50% FR→EN
+    const enToFr = Math.random() > 0.5;
+    const question = enToFr ? card.en : card.fr;
+    const answer   = enToFr ? card.fr : card.en;
+    // distractors: 3 random wrong answers from same direction
+    const distractors = shuffle(all.filter(c => c.en !== card.en))
+      .slice(0, 3)
+      .map(c => enToFr ? c.fr : c.en);
+    const options = shuffle([answer, ...distractors]);
+    return { question, answer, options, enToFr, en: card.en, fr: card.fr };
+  });
+}
+
+function startQuiz() {
+  quizQuestions = buildQuizQuestions();
+  quizCurrent = 0;
+  quizCorrect = 0;
+  quizWrong = 0;
+  quizMistakes = [];
+  quizAnswered = false;
+
+  document.getElementById('quiz-hero-wrap').classList.add('hide');
+  document.getElementById('quiz-active').classList.add('show');
+  document.getElementById('quiz-results').classList.remove('show');
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  quizAnswered = false;
+  const q = quizQuestions[quizCurrent];
+  const total = quizQuestions.length;
+
+  document.getElementById('quiz-qnum').textContent = `Question ${quizCurrent + 1} / ${total}`;
+  document.getElementById('quiz-score-live').innerHTML = `✓ ${quizCorrect} &nbsp; ✗ ${quizWrong}`;
+  document.getElementById('quiz-progress-bar').style.width = ((quizCurrent / total) * 100) + '%';
+  document.getElementById('quiz-direction').textContent = q.enToFr ? 'EN → FR' : 'FR → EN';
+  document.getElementById('quiz-question-text').textContent = q.question;
+  document.getElementById('quiz-feedback').innerHTML = '';
+  document.getElementById('quiz-next-btn').classList.remove('show');
+
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = opt;
+    btn.onclick = () => handleAnswer(opt, q, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function handleAnswer(chosen, q, btn) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+
+  const isCorrect = chosen === q.answer;
+  const allBtns = document.querySelectorAll('.quiz-option');
+
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent === q.answer) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quiz-feedback');
+  if (isCorrect) {
+    quizCorrect++;
+    fb.innerHTML = `<span class="feedback-icon">✅</span> <span>Correct !</span>`;
+  } else {
+    quizWrong++;
+    quizMistakes.push({ en: q.en, fr: q.fr, yourAnswer: chosen });
+    fb.innerHTML = `<span class="feedback-icon">❌</span> <span>La bonne réponse était : <strong>${q.answer}</strong></span>`;
+  }
+
+  document.getElementById('quiz-score-live').innerHTML = `✓ ${quizCorrect} &nbsp; ✗ ${quizWrong}`;
+  document.getElementById('quiz-next-btn').classList.add('show');
+  document.getElementById('quiz-next-btn').textContent =
+    quizCurrent + 1 < quizQuestions.length ? 'Suivant →' : 'Voir les résultats';
+}
+
+function quizNext() {
+  quizCurrent++;
+  if (quizCurrent < quizQuestions.length) {
+    renderQuizQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-active').classList.remove('show');
+  const res = document.getElementById('quiz-results');
+  res.classList.add('show');
+
+  const total = quizQuestions.length;
+  const pct = Math.round((quizCorrect / total) * 100);
+
+  const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '📚';
+  const label = pct >= 90 ? 'Excellent ! Tu es prêt(e) !'
+              : pct >= 70 ? 'Très bien ! Encore un peu !'
+              : pct >= 50 ? 'Pas mal, continue !'
+              : 'À réviser encore…';
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-score').textContent = `${quizCorrect}/${total}`;
+  document.getElementById('result-label').textContent = label;
+  document.getElementById('res-correct').textContent = quizCorrect;
+  document.getElementById('res-wrong').textContent = quizWrong;
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('quiz-progress-bar').style.width = '100%';
+
+  // Wrong answers list
+  const section = document.getElementById('result-wrong-section');
+  if (quizMistakes.length > 0) {
+    section.innerHTML = `
+      <div class="result-wrong-list">
+        <div class="result-wrong-header">À revoir (${quizMistakes.length} erreur${quizMistakes.length > 1 ? 's' : ''})</div>
+        ${quizMistakes.map(m => `
+          <div class="result-wrong-item">
+            <div>
+              <div class="result-wrong-en">${m.en}</div>
+              <div class="result-wrong-yours">Ta réponse : ${m.yourAnswer}</div>
+            </div>
+            <div class="result-wrong-fr">${m.fr}</div>
+          </div>`).join('')}
+      </div>`;
+  } else {
+    section.innerHTML = `<p style="color:var(--green);font-weight:600;margin-bottom:24px;">Zéro faute ! 🌟</p>`;
+  }
+
+  // Reset hero for next time
+  document.getElementById('quiz-hero-wrap').classList.remove('hide');
+}
+
+// keyboard in quiz
+document.addEventListener("keydown", e => {
+  const quizActive = document.getElementById('quiz-active');
+  if (!quizActive.classList.contains('show')) return;
+  if (e.key === "Enter" && quizAnswered) quizNext();
+});
+</script>
+</body>
+</html>
