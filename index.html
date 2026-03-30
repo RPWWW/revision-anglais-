@@ -702,6 +702,130 @@
     .flashcard { height: 100px; }
     .card-front .word, .card-back .word { font-size: 13px; }
   }
+
+  /* ── EXAM ── */
+  .exam-wrap { max-width: 760px; margin: 0 auto; }
+  .exam-hero { text-align: center; padding: 48px 24px 40px; }
+  .exam-hero h2 { font-size: 34px; font-weight: 700; letter-spacing: -0.6px; margin-bottom: 10px; }
+  .exam-hero p { font-size: 16px; color: var(--text-secondary); margin-bottom: 32px; }
+  .exam-hero-wrap.hide { display: none; }
+
+  .exam-active { display: none; }
+  .exam-active.show { display: block; }
+
+  .exam-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .exam-title-bar { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+  .exam-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
+  .exam-submit-btn {
+    font-size: 15px; font-weight: 600; font-family: inherit;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 100px; padding: 11px 28px; cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(0,113,227,0.25);
+  }
+  .exam-submit-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+  .exam-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+
+  .exam-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 32px 1fr 1fr;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .exam-row:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,113,227,0.1);
+  }
+  .exam-row.correct { border-color: var(--green); background: rgba(52,199,89,0.04); }
+  .exam-row.wrong   { border-color: var(--red);   background: rgba(255,59,48,0.04); }
+
+  .exam-num {
+    font-size: 13px; font-weight: 600;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+  .exam-word {
+    font-size: 15px; font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+  .exam-lang-tag {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.6px; text-transform: uppercase;
+    color: var(--text-tertiary);
+    display: block; margin-bottom: 2px;
+  }
+  .exam-input-wrap { position: relative; }
+  .exam-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .exam-input:focus { border-color: var(--accent); background: #fff; }
+  .exam-input.inp-correct {
+    border-color: var(--green); background: rgba(52,199,89,0.06);
+    color: #1a7a33; font-weight: 600;
+  }
+  .exam-input.inp-wrong {
+    border-color: var(--red); background: rgba(255,59,48,0.06);
+    color: var(--red);
+  }
+  .exam-input:disabled { cursor: default; }
+  .exam-correction {
+    font-size: 12px; color: var(--green); font-weight: 600;
+    margin-top: 5px; display: none;
+  }
+  .exam-correction.show { display: block; }
+
+  .exam-result-banner {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 28px;
+    text-align: center;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-md);
+  }
+  .exam-result-banner.show { display: block; }
+  .exam-res-emoji { font-size: 52px; margin-bottom: 12px; }
+  .exam-res-score { font-size: 44px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+  .exam-res-label { font-size: 16px; color: var(--text-secondary); margin-bottom: 20px; }
+  .exam-res-stats { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+  .exam-res-stat { background: var(--bg); border-radius: 12px; padding: 12px 20px; min-width: 80px; }
+  .exam-res-stat-num { font-size: 22px; font-weight: 700; }
+  .exam-res-stat-num.green { color: var(--green); }
+  .exam-res-stat-num.red   { color: var(--red); }
+  .exam-res-stat-num.blue  { color: var(--accent); }
+  .exam-res-stat-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); margin-top: 2px; }
+
+  .exam-results { display: none; }
+  .exam-results.show { display: block; }
+
+  @media (max-width: 600px) {
+    .exam-row { grid-template-columns: 24px 1fr; grid-template-rows: auto auto; }
+    .exam-input-wrap { grid-column: 1/-1; }
+  }
 </style>
 </head>
 <body>
@@ -710,8 +834,9 @@
   <div class="header-inner">
     <div class="logo">Flash<span>Cards</span> · Finance</div>
     <div class="top-nav">
-      <button class="nav-btn active" onclick="switchPage('flashcards')">Cartes</button>
-      <button class="nav-btn" onclick="switchPage('quiz')">✦ Test</button>
+      <button class="nav-btn active" onclick="switchPage('flashcards', this)">Cartes</button>
+      <button class="nav-btn" onclick="switchPage('quiz', this)">✦ Test</button>
+      <button class="nav-btn" onclick="switchPage('exam', this)">✎ Examen</button>
     </div>
     <div class="progress-pill" id="total-count">0 termes</div>
   </div>
@@ -799,6 +924,59 @@
 
   </div>
 </div><!-- end page-quiz -->
+
+<!-- ══ PAGE: EXAM ══ -->
+<div class="page" id="page-exam">
+  <div class="exam-wrap">
+
+    <!-- Start screen -->
+    <div id="exam-hero-wrap" class="exam-hero">
+      <h2>Examen ✎</h2>
+      <p>20 mots aléatoires. Écris la traduction toi-même,<br>sans aide — comme un vrai examen !</p>
+      <button class="quiz-start-btn" onclick="startExam()">Commencer l'examen</button>
+    </div>
+
+    <!-- Exam in progress -->
+    <div class="exam-active" id="exam-active">
+      <div class="exam-topbar">
+        <div>
+          <div class="exam-title-bar">Examen ✎</div>
+          <div class="exam-subtitle">Écris la traduction française de chaque mot anglais</div>
+        </div>
+        <button class="exam-submit-btn" onclick="submitExam()">Corriger →</button>
+      </div>
+
+      <div class="exam-list" id="exam-list"></div>
+
+      <div style="text-align:center; margin-bottom: 40px;">
+        <button class="exam-submit-btn" onclick="submitExam()" style="padding:14px 48px; font-size:16px;">
+          Corriger mon examen →
+        </button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="exam-results" id="exam-results">
+      <div class="exam-result-banner show" id="exam-result-banner">
+        <div class="exam-res-emoji" id="exam-res-emoji">🎉</div>
+        <div class="exam-res-score" id="exam-res-score">0/20</div>
+        <div class="exam-res-label" id="exam-res-label">—</div>
+        <div class="exam-res-stats">
+          <div class="exam-res-stat"><div class="exam-res-stat-num green" id="exam-res-ok">0</div><div class="exam-res-stat-lbl">Corrects</div></div>
+          <div class="exam-res-stat"><div class="exam-res-stat-num red"   id="exam-res-ko">0</div><div class="exam-res-stat-lbl">Erreurs</div></div>
+          <div class="exam-res-stat"><div class="exam-res-stat-num blue"  id="exam-res-pct">0%</div><div class="exam-res-stat-lbl">Score</div></div>
+        </div>
+      </div>
+
+      <div class="exam-list" id="exam-list-corrected"></div>
+
+      <div style="text-align:center; margin: 32px 0 48px;">
+        <button class="quiz-start-btn" onclick="startExam()">Nouvel examen</button>
+      </div>
+    </div>
+
+  </div>
+</div><!-- end page-exam -->
 
 </main>
 
@@ -1054,6 +1232,121 @@ const DATA = {
     ["Speculation", "Spéculation"],
     ["Market sentiment", "Sentiment de marché"],
   ],
+  "Currencies": [
+    ["Currency", "Monnaie / Devise"],
+    ["Money", "Argent"],
+    ["Cash", "Espèces"],
+    ["Banknote / Bill", "Billet"],
+    ["Coin", "Pièce"],
+    ["Legal tender", "Monnaie légale"],
+    ["Currency symbol", "Symbole monétaire"],
+    ["ISO currency code", "Code ISO de devise"],
+    ["Exchange", "Change"],
+    ["Currency exchange", "Change de devises"],
+    ["Foreign exchange market (FX market)", "Marché des changes"],
+    ["Currency trading", "Commerce de devises"],
+    ["Currency pair", "Paire de devises"],
+    ["Exchange rate", "Taux de change"],
+    ["Floating exchange rate", "Taux de change flottant"],
+    ["Fixed exchange rate", "Taux de change fixe"],
+    ["Currency conversion", "Conversion de devises"],
+    ["Global market", "Marché mondial"],
+    ["Interbank market", "Marché interbancaire"],
+    ["Liquid market", "Marché liquide"],
+    ["Trading platform", "Plateforme de trading"],
+    ["Purchasing power", "Pouvoir d'achat"],
+    ["Purchasing Power Parity (PPP)", "Parité de pouvoir d'achat"],
+    ["Big Mac Index", "Indice Big Mac"],
+    ["Real interest rate", "Taux d'intérêt réel"],
+    ["Nominal interest rate", "Taux d'intérêt nominal"],
+    ["Supply and demand", "Offre et demande"],
+    ["Currency appreciation", "Appréciation de la monnaie"],
+    ["Currency depreciation", "Dépréciation de la monnaie"],
+    ["Strong currency", "Monnaie forte"],
+    ["Weak currency", "Monnaie faible"],
+    ["Exchange rate fluctuation", "Fluctuation du taux de change"],
+    ["Devaluation", "Dévaluation"],
+    ["Gold standard", "Étalon-or"],
+    ["Gold reserves", "Réserves d'or"],
+    ["Bretton Woods system", "Système de Bretton Woods"],
+    ["Reserve currency", "Monnaie de réserve"],
+    ["Monetary policy", "Politique monétaire"],
+    ["Money supply", "Masse monétaire"],
+    ["Trader", "Trader / Négociant"],
+    ["Hedge fund", "Fonds spéculatif"],
+    ["Asset manager", "Gestionnaire d'actifs"],
+    ["Pension fund", "Fonds de pension"],
+    ["Insurance company", "Compagnie d'assurance"],
+    ["Commercial bank", "Banque commerciale"],
+    ["Carry trade", "Stratégie de portage"],
+    ["Capital flow", "Flux de capitaux"],
+    ["Return on investment", "Rendement de l'investissement"],
+    ["Financial asset", "Actif financier"],
+    ["Currency risk", "Risque de change"],
+    ["Market volatility", "Volatilité du marché"],
+  ],
+  "Stocks & Bonds": [
+    ["individual / retail investor", "investisseur particulier"],
+    ["investment product", "produit d'investissement"],
+    ["investment strategy", "stratégie d'investissement"],
+    ["asset class", "classe d'actifs"],
+    ["financial market", "marché financier"],
+    ["listed company", "entreprise cotée"],
+    ["economic cycle", "cycle économique"],
+    ["recession", "récession"],
+    ["economic slowdown", "ralentissement économique"],
+    ["consumer spending", "dépenses des consommateurs"],
+    ["risk–return trade-off", "arbitrage risque / rendement"],
+    ["time horizon", "horizon de placement"],
+    ["interest rate cut", "baisse des taux d'intérêt"],
+    ["to diversify", "diversifier"],
+    ["to reduce risk", "réduire le risque"],
+    ["share / stock", "action / titre"],
+    ["equity", "fonds propres / actions"],
+    ["shareholder", "actionnaire"],
+    ["co-owner", "copropriétaire"],
+    ["ownership", "propriété / détention"],
+    ["voting rights", "droits de vote"],
+    ["company strategy", "stratégie de l'entreprise"],
+    ["share price", "cours de l'action"],
+    ["price fluctuation", "fluctuation des cours"],
+    ["capital gain", "plus-value (en capital)"],
+    ["capital loss", "moins-value"],
+    ["dividend payment", "versement de dividende"],
+    ["market value", "valeur de marché"],
+    ["high risk", "risque élevé"],
+    ["price volatility", "volatilité des cours"],
+    ["market downturn", "repli du marché"],
+    ["liquidation", "liquidation (d'une entreprise)"],
+    ["to go into liquidation", "être mis en liquidation"],
+    ["last to be repaid", "dernier à être remboursé"],
+    ["to lose the entire investment", "perdre la totalité de son investissement"],
+    ["bond", "obligation"],
+    ["debt", "dette"],
+    ["debt instrument", "instrument de dette"],
+    ["issuer", "émetteur"],
+    ["creditor", "créancier"],
+    ["to lend money", "prêter de l'argent"],
+    ["to borrow money", "emprunter de l'argent"],
+    ["principal", "capital / principal"],
+    ["face value", "valeur nominale"],
+    ["maturity", "échéance"],
+    ["coupon", "coupon (obligataire)"],
+    ["regular income", "revenu régulier"],
+    ["fixed income", "revenu fixe"],
+    ["repayment", "remboursement"],
+    ["to default", "faire défaut"],
+    ["credit risk", "risque de crédit"],
+    ["bankruptcy", "faillite"],
+    ["recovery", "recouvrement / récupération partielle"],
+    ["seniority", "rang de priorité (de remboursement)"],
+    ["to be repaid before", "être remboursé avant"],
+    ["government bond", "obligation d'État"],
+    ["corporate bond", "obligation d'entreprise"],
+    ["high-yield / junk bond", "obligation à haut rendement / spéculative"],
+    ["investment-grade bond", "obligation de qualité"],
+    ["emerging market bond", "obligation des marchés émergents"],
+  ],
 };
 
 // ── STATE ──
@@ -1229,12 +1522,148 @@ buildTabs();
 renderCards();
 
 // ── PAGE SWITCHING ──
-function switchPage(page) {
+function switchPage(page, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  if (btn) btn.classList.add('active');
 }
+
+// ── EXAM LOGIC ──
+let examWords = [];
+
+function startExam() {
+  const all = getAllWords();
+  examWords = shuffle(all).slice(0, 20);
+
+  // Reset UI
+  document.getElementById('exam-hero-wrap').classList.add('hide');
+  document.getElementById('exam-active').classList.add('show');
+  document.getElementById('exam-results').classList.remove('show');
+  document.getElementById('exam-list-corrected').innerHTML = '';
+  document.getElementById('exam-result-banner').classList.remove('show');
+
+  // Build list
+  const list = document.getElementById('exam-list');
+  list.innerHTML = '';
+  examWords.forEach((w, i) => {
+    const row = document.createElement('div');
+    row.className = 'exam-row';
+    row.id = 'exam-row-' + i;
+    row.innerHTML = `
+      <div class="exam-num">${i + 1}</div>
+      <div class="exam-word">
+        <span class="exam-lang-tag">English</span>
+        ${w.en}
+      </div>
+      <div class="exam-input-wrap">
+        <span class="exam-lang-tag">Français</span>
+        <input class="exam-input" id="exam-inp-${i}" type="text" placeholder="Ta traduction…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="exam-correction" id="exam-corr-${i}"></div>
+      </div>`;
+    list.appendChild(row);
+  });
+
+  // Focus first input
+  setTimeout(() => document.getElementById('exam-inp-0')?.focus(), 100);
+
+  // Tab / Enter navigation between inputs
+  examWords.forEach((_, i) => {
+    const inp = document.getElementById('exam-inp-' + i);
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const next = document.getElementById('exam-inp-' + (i + 1));
+        if (next) next.focus(); else submitExam();
+      }
+    });
+  });
+}
+
+function normalize(str) {
+  return str.trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+    .replace(/[''`]/g, "'")
+    .replace(/\s+/g, ' ');
+}
+
+function isAcceptable(userInput, correct) {
+  const u = normalize(userInput);
+  const c = normalize(correct);
+  if (u === c) return true;
+  // Accept if answer contains one of the slash-separated variants
+  const variants = c.split('/').map(v => v.trim());
+  if (variants.some(v => u === v)) return true;
+  // Accept if parenthetical part is omitted: "fonds commun de placement (fcp)" → accept "fonds commun de placement"
+  const withoutParen = c.replace(/\s*\([^)]*\)/g, '').trim();
+  if (u === withoutParen) return true;
+  // Accept partial match if user typed at least 60% of the main answer
+  if (u.length >= 3 && withoutParen.startsWith(u) && u.length / withoutParen.length >= 0.6) return true;
+  return false;
+}
+
+function submitExam() {
+  let correct = 0;
+  const correctedRows = [];
+
+  examWords.forEach((w, i) => {
+    const inp = document.getElementById('exam-inp-' + i);
+    const userVal = inp.value;
+    const ok = isAcceptable(userVal, w.fr);
+    if (ok) correct++;
+    correctedRows.push({ word: w, userVal, ok });
+  });
+
+  // Hide form, show results
+  document.getElementById('exam-active').classList.remove('show');
+  const resultsEl = document.getElementById('exam-results');
+  resultsEl.classList.add('show');
+
+  // Banner
+  const total = examWords.length;
+  const pct = Math.round((correct / total) * 100);
+  const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '📚';
+  const label = pct >= 90 ? 'Excellent ! Tu maîtrises le vocabulaire !'
+              : pct >= 70 ? 'Très bien ! Quelques mots à revoir.'
+              : pct >= 50 ? 'Pas mal, continue à réviser !'
+              : 'Encore un peu de travail… tu y es presque !';
+
+  document.getElementById('exam-res-emoji').textContent = emoji;
+  document.getElementById('exam-res-score').textContent = `${correct}/${total}`;
+  document.getElementById('exam-res-label').textContent = label;
+  document.getElementById('exam-res-ok').textContent = correct;
+  document.getElementById('exam-res-ko').textContent = total - correct;
+  document.getElementById('exam-res-pct').textContent = pct + '%';
+  document.getElementById('exam-result-banner').classList.add('show');
+
+  // Corrected list
+  const corrList = document.getElementById('exam-list-corrected');
+  corrList.innerHTML = '';
+  correctedRows.forEach(({ word, userVal, ok }, i) => {
+    const row = document.createElement('div');
+    row.className = 'exam-row ' + (ok ? 'correct' : 'wrong');
+    row.innerHTML = `
+      <div class="exam-num">${ok ? '✓' : '✗'}</div>
+      <div class="exam-word">
+        <span class="exam-lang-tag">English</span>
+        ${word.en}
+      </div>
+      <div class="exam-input-wrap">
+        <span class="exam-lang-tag">${ok ? 'Correct !' : 'Ta réponse → Bonne réponse'}</span>
+        <input class="exam-input ${ok ? 'inp-correct' : 'inp-wrong'}" value="${escHtml(userVal) || '(vide)'}" disabled>
+        ${!ok ? `<div class="exam-correction show">✓ ${escHtml(word.fr)}</div>` : ''}
+      </div>`;
+    corrList.appendChild(row);
+  });
+
+  // Scroll to top of results
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 
 // ── QUIZ LOGIC ──
 let quizQuestions = [];
